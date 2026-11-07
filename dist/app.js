@@ -1,12 +1,78 @@
 const $ = s => document.querySelector(s);
 const storageKey = 'logicquest-story-v2';
+const userIdKey = 'logicquest-user-id';
+const userId = localStorage.getItem(userIdKey) || (() => {
+ const id = crypto.randomUUID();
+ localStorage.setItem(userIdKey,id);
+ return id;
+})();
 let state; try { state = JSON.parse(localStorage.getItem(storageKey)); } catch {}
-if (!state || !Array.isArray(state.attempts) || !Array.isArray(state.completed)) state = {attempts:[],completed:[],age:'6'};
-const persist = () => { try { localStorage.setItem(storageKey,JSON.stringify(state)); } catch {} };
+const hasLocalState = Boolean(state && Array.isArray(state.attempts) && Array.isArray(state.completed));
+if (!hasLocalState) state = {attempts:[],completed:[],age:'6'};
+let syncTimer;
+let syncing = false;
+let syncPending = false;
+let cloudConfigured = false;
+const setSyncStatus = message => { const status=$('#sync-status');if(status)status.textContent=message; };
+const persist = () => {
+ try { localStorage.setItem(storageKey,JSON.stringify(state)); }
+ catch (error) { console.error('Không thể lưu tiến độ trên thiết bị:',error);setSyncStatus('Không lưu được trên thiết bị'); }
+ clearTimeout(syncTimer);
+ syncTimer=setTimeout(syncProgress,500);
+};
+async function syncProgress(){
+ if(!cloudConfigured){setSyncStatus('Chưa cấu hình Supabase — chỉ lưu trên thiết bị');return;}
+ if(syncing){syncPending=true;return;}
+ syncing=true;
+ setSyncStatus('Đang đồng bộ...');
+ try{
+  const response=await fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,completed:state.completed,attempts:state.attempts,stars:stars(),age:Number(state.age)})});
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||`HTTP ${response.status}`);
+  setSyncStatus('Đã đồng bộ');
+ }catch(error){
+  console.error('Không thể đồng bộ tiến độ:',error);
+  setSyncStatus('Chưa đồng bộ — dữ liệu vẫn lưu trên thiết bị');
+ }finally{
+  syncing=false;
+  if(syncPending){syncPending=false;syncTimer=setTimeout(syncProgress,100);}
+ }
+}
+async function loadCloudProgress(){
+ setSyncStatus('Đang kiểm tra kết nối...');
+ try{
+  const healthResponse=await fetch('/api/health');
+  const health=await healthResponse.json();
+  if(!healthResponse.ok)throw new Error(health.error||`HTTP ${healthResponse.status}`);
+  if(!health.envConfigured){setSyncStatus('Chưa cấu hình Supabase — chỉ lưu trên thiết bị');return;}
+  cloudConfigured=true;
+  setSyncStatus('Đang tải tiến độ...');
+  const response=await fetch(`/api/progress/${encodeURIComponent(userId)}`);
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||`HTTP ${response.status}`);
+  const cloud=result.data;
+  if(cloud){
+   state.completed=[...new Set([...state.completed,...(Array.isArray(cloud.completed)?cloud.completed:[])])];
+   const attempts=new Map();
+   [...state.attempts,...(Array.isArray(cloud.attempts)?cloud.attempts:[])].forEach((attempt,index)=>{
+    const key=attempt.attempt_id||JSON.stringify(attempt);
+    attempts.set(key,{...attempt,attempt_id:attempt.attempt_id||`legacy-${index}-${key}`});
+   });
+   state.attempts=[...attempts.values()];
+   if(!hasLocalState&&Number.isInteger(cloud.age))state.age=String(cloud.age);
+   $('#grade').value=state.age;
+  }
+  render();
+  persist();
+ }catch(error){
+  console.error('Không thể tải tiến độ từ máy chủ:',error);
+  setSyncStatus('Ngoại tuyến — chỉ lưu trên thiết bị');
+ }
+}
 const escapeHTML = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const skills = ['Tìm manh mối','Khám phá quy luật','Nghĩ cách mới','Lập kế hoạch','Thử cách khác'];
 const skillNotes = ['Logic và phân tích','Nhận biết chuỗi và dự đoán','Sáng tạo nhiều cách giải','Sắp xếp bước để đạt mục tiêu','Đổi cách làm và nhìn lại'];
-const worlds = [['Rừng Quy Luật','Tìm những viên sáng giữa khu rừng','🌲',''],['Lâu Đài Manh Mối','Giúp Cáo tìm chiếc chìa khóa','🏰','castle'],['Xưởng Ý Tưởng','Nghĩ cách mới và chuẩn bị chuyến đi','🤖','robot'],['Đảo Thử Cách Khác','Đổi kế hoạch để thắp hải đăng','🕵️','city']];
+const worlds = [['Rừng Quy Luật','Tìm những viên sáng giữa khu rừng','🌲',''],['Lâu Đài Suy Luận','Giúp Cáo tìm chiếc chìa khóa','🏰','castle'],['Nhà Máy Robot','Nghĩ cách mới và chuẩn bị chuyến đi','🤖','robot'],['Thành Phố Thám Tử','Đổi kế hoạch để thắp hải đăng','🕵️','city']];
 const questions = [
 {id:0,w:0,s:1,story:'Cáo tìm thấy cánh cổng phát sáng. Các viên ngọc trên cổng đang lặp lại một điệu nhảy.',q:'🔴 🔵 🔵 · 🔴 🔵 🔵 · ?\nViên ngọc tiếp theo có màu gì?',o:['🔴 Đỏ','🔵 Xanh','🟡 Vàng'],a:0,h:'Thử đọc từng nhóm: đỏ – xanh – xanh.',why:'Mỗi nhóm bắt đầu bằng một viên đỏ. Cánh cổng đã mở!'},
 {id:1,w:0,s:1,story:'Một hàng cây chỉ đường tới viên năng lượng đầu tiên.',q:'🌱 🌳 🌱 🌳 🌱 …\nCây nào xuất hiện tiếp theo?',o:['🌱 Cây nhỏ','🌳 Cây lớn','🌼 Bông hoa'],a:1,h:'Cây nhỏ và cây lớn đứng xen kẽ nhau.',why:'Sau cây nhỏ là cây lớn. Cáo đã tìm được viên sáng trong rừng!'},
@@ -40,7 +106,7 @@ function check(){
  const reason=$('#reason').value.trim();if(current.open&&!reason){$('#feedback').textContent='Em hãy ghi lại một ý tưởng, hoặc nhờ người lớn ghi giúp nhé.';return;}
  if(!current.open&&choice===null){$('#feedback').textContent='Em chọn một cách giải trước nhé.';return;}
  tries++;const correct=current.open?null:choice===current.a;
- state.attempts.push({q:current.id,w:current.w,kind:current.open?'open':'closed',correct,hints,tries,reason});
+ state.attempts.push({attempt_id:crypto.randomUUID(),q:current.id,w:current.w,kind:current.open?'open':'closed',correct,hints,tries,reason});
  if(correct||current.open){const fresh=!state.completed.includes(current.id);if(fresh)state.completed.push(current.id);done=true;$('#feedback').textContent=`${current.why}${fresh?' +1 ⭐ cho lần khám phá đầu tiên!':''}`;$('#check').textContent='Tiếp tục hành trình →';$('#hintbtn').disabled=true;$('#reason').disabled=true;document.querySelectorAll('.options button').forEach(b=>b.disabled=true);}
  else{$('#feedback').textContent='Cách này chưa khớp với các manh mối. Em xem lại hoặc nhờ Cú Mèo gợi ý nhé.';}
  persist();$('#stars').textContent=stars();
@@ -48,4 +114,4 @@ function check(){
 function stopReading(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
 function readStory(){if(!('speechSynthesis' in window)){$('#feedback').textContent='Thiết bị chưa hỗ trợ đọc tự động. Em nhờ người lớn đọc cùng nhé.';return;}stopReading();const utterance=new SpeechSynthesisUtterance(`${current.story} ${current.q} ${current.o?.join('. ')||''}`);utterance.lang='vi-VN';utterance.rate=.85;utterance.onerror=()=>{if($('#feedback'))$('#feedback').textContent='Chưa đọc được trên thiết bị này. Em nhờ người lớn đọc cùng nhé.';};window.speechSynthesis.speak(utterance);}
 function resetProgress(){if(!confirm('Xóa toàn bộ lượt chơi và ý tưởng trên trình duyệt này?'))return;state={attempts:[],completed:[],age:state.age};persist();render();}
-document.querySelectorAll('aside nav button').forEach(b=>b.onclick=()=>navigateTo(b.dataset.view));$('.close').onclick=()=>{stopReading();$('#game').close();};$('#game').addEventListener('close',stopReading);$('#grade').value=state.age;$('#grade').onchange=e=>{state.age=e.target.value;persist();};render();
+document.querySelectorAll('aside nav button').forEach(b=>b.onclick=()=>navigateTo(b.dataset.view));$('.close').onclick=()=>{stopReading();$('#game').close();};$('#game').addEventListener('close',stopReading);$('#grade').value=state.age;$('#grade').onchange=e=>{state.age=e.target.value;persist();};render();loadCloudProgress();
