@@ -1,0 +1,63 @@
+.detective-film{position:relative;height:188px;overflow:hidden;margin:16px 0 12px;border:1px solid #d8e8df;border-radius:20px;isolation:isolate;background:#ccebf1}
+.detective-film--bridge{height:auto;aspect-ratio:16/9;background:#bde8f5}
+.detective-film-art{display:block;width:100%;height:100%;object-fit:cover;transition:transform .9s ease,filter .9s ease}
+.detective-film--bridge.film-solved .detective-film-art{transform:scale(1.035);filter:saturate(1.08) brightness(1.03)}
+.detective-film>span{position:absolute}
+.film-sky{inset:0 0 25%;background:linear-gradient(180deg,#a8dce9 0%,#d8eee3 100%)}
+.film-sun{top:23px;left:13%;width:31px;height:31px;border-radius:50%;background:#ffe5a3;box-shadow:0 0 0 8px #ffe5a333}
+.film-cloud{z-index:1;width:46px;height:13px;border-radius:20px;background:#fff9;filter:drop-shadow(0 2px 2px #5795a522)}
+.film-cloud:before,.film-cloud:after{position:absolute;bottom:4px;border-radius:50%;background:inherit;content:""}
+.film-cloud:before{left:9px;width:20px;height:20px}.film-cloud:after{left:23px;width:15px;height:15px}
+.film-cloud--one{top:37px;left:32%;animation:film-cloud-drift 11s ease-in-out infinite alternate}
+.film-cloud--two{top:62px;left:63%;transform:scale(.72);opacity:.72}
+.film-island{right:-5%;bottom:31px;width:67%;height:112px;border-radius:76% 0 0;background:linear-gradient(155deg,#b9dda0 0%,#80ba88 68%,#69a778 100%)}
+.film-river{left:0;right:0;bottom:0;height:47px;background:linear-gradient(180deg,#87d1d2,#68bdc7)}
+.film-river:after{position:absolute;inset:11px 0;background:repeating-linear-gradient(170deg,transparent 0 27px,#ffffff36 28px 31px,transparent 32px 57px);content:""}
+.film-lighthouse{right:12%;top:48px;z-index:2;width:25px;height:56px;border-radius:9px 9px 3px 3px;background:#fff4d9;box-shadow:inset 0 -8px #ec8d64,0 3px 5px #47756833;transform:perspective(50px) rotateX(2deg)}
+.film-lighthouse:before{position:absolute;top:-12px;left:-3px;width:31px;height:17px;border-radius:7px 7px 2px 2px;background:repeating-linear-gradient(90deg,#f47f64 0 7px,#fff2d7 7px 14px);content:""}
+.film-lighthouse i{position:absolute;top:-19px;left:7px;width:11px;height:10px;background:#ee8463;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.film-lighthouse b{position:absolute;top:3px;left:4px;width:17px;height:9px;border-radius:3px;background:#f8c96f;box-shadow:0 0 12px 5px #ffe08d8c}
+.film-lighthouse em{position:absolute;top:25px;left:8px;width:9px;height:12px;border-radius:5px 5px 0 0;background:#a8d4c0}
+.film-bridge{left:35%;bottom:43px;z-index:3;width:68px;height:30px;border-bottom:5px solid #bd8b66}
+.film-bridge:before{position:absolute;left:-4px;top:0;width:78px;height:7px;border-radius:2px;background:#ae7855;content:""}
+.film-bridge i,.film-bridge b{position:absolute;top:6px;width:5px;height:25px;background:#b98560}.film-bridge i{left:10px}.film-bridge b{right:10px}
+.film-bridge em{position:absolute;left:19px;top:12px;width:30px;height:14px;background:repeating-linear-gradient(90deg,#f3c85f 0 6px,#4e6370 6px 12px);transform:rotate(-45deg)}
+.film-sign{right:25%;bottom:59px;z-index:4;width:67px;height:31px;border:2px solid #fff;border-radius:8px;background:#fff0b5;box-shadow:0 2px 5px #51795b26;transform:rotate(-6deg)}
+.film-sign:before{position:absolute;left:8px;top:7px;width:44px;height:12px;border-top:2px solid #77946a;border-right:2px solid #77946a;content:""}
+.film-sign:after{position:absolute;right:8px;top:7px;width:8px;height:8px;border-top:2px solid #77946a;border-right:2px solid #77946a;content:"";transform:rotate(45deg)}
+.film-sign i{position:absolute;left:31px;bottom:-13px;width:3px;height:13px;background:#a98259}
+.film-path{left:20%;bottom:39px;z-index:2;width:0;height:19px;border-top:3px dashed #fff0b5;border-radius:50%;transform:rotate(-25deg);transition:width 1.1s ease .2s}
+.film-fox{left:14%;bottom:35px;z-index:5;width:38px;height:35px;animation:film-walk 2.5s ease-in-out infinite}
+.film-fox:before{position:absolute;bottom:0;left:4px;width:31px;height:26px;border-radius:47% 48% 43% 43%;background:linear-gradient(145deg,#ffc16c,#f18543);box-shadow:inset -5px -3px #e66e45,0 3px 5px #426f6930;content:""}
+.film-fox i:before,.film-fox i:after{position:absolute;top:0;width:13px;height:17px;border:2px solid #d96c42;border-radius:80% 15% 35% 15%;background:#f2934c;content:""}.film-fox i:before{left:5px;transform:rotate(-10deg)}.film-fox i:after{right:2px;transform:rotate(75deg)}
+.film-fox b:before{position:absolute;bottom:10px;left:13px;z-index:2;width:3px;height:3px;border-radius:50%;background:#503d3a;box-shadow:12px 0 #503d3a;content:""}
+.film-fox b:after{position:absolute;bottom:4px;left:18px;z-index:2;width:6px;height:4px;border-radius:50%;background:#74483e;content:""}
+.detective-film--lamp{background:#c7e7f0}
+.detective-film--lamp .film-sky{bottom:16%;background:linear-gradient(180deg,#a8dcec,#e6f2dc)}
+.film-ground{left:-5%;right:-5%;bottom:-35px;height:110px;border-radius:50% 50% 0 0;background:linear-gradient(145deg,#c7dd9c,#96c27b)}
+.film-wind{left:8%;top:74px;z-index:2;width:106px;height:42px;color:#70bdcf;animation:film-wind 1.8s ease-in-out infinite}
+.film-wind:before,.film-wind:after,.film-wind i{position:absolute;height:4px;border-radius:5px;background:#fff9;content:""}
+.film-wind:before{top:2px;left:0;width:57px}.film-wind i{top:16px;left:17px;width:78px}.film-wind:after{top:30px;left:3px;width:45px}
+.film-lamp{left:57%;top:63px;z-index:3;width:28px;height:42px;border-radius:45% 45% 35% 35%;background:linear-gradient(90deg,#db7650,#ffc66f 45%,#e88757);box-shadow:0 0 0 4px #fff3,inset 0 -5px #b66550;animation:film-flicker 1.3s ease-in-out infinite}
+.film-lamp:before{position:absolute;top:-5px;left:5px;width:18px;height:7px;border-radius:5px;background:#806f58;content:""}
+.film-lamp i{position:absolute;top:-15px;left:12px;width:3px;height:12px;background:#786b5a}
+.film-lamp i:after{position:absolute;top:-12px;left:-4px;width:11px;height:14px;border-radius:50% 50% 45% 45%;background:#ffd969;box-shadow:0 0 15px 6px #ffd96999;content:""}
+.film-lamp b{position:absolute;left:7px;top:10px;width:14px;height:16px;border-radius:8px;background:#fff4bd88}
+.film-lamp em{position:absolute;left:12px;bottom:-10px;width:4px;height:11px;background:#84765e;box-shadow:7px 0 #84765e}
+.film-shield{left:43%;top:66px;z-index:4;width:34px;height:50px;border:3px solid #a87543;border-radius:5px;background:repeating-linear-gradient(0deg,#e9cb8d 0 9px,#d7a967 9px 12px);box-shadow:2px 3px 4px #54775526;transform:rotate(8deg);transition:transform .5s ease,left .5s ease}
+.film-shield i{position:absolute;left:8px;top:10px;width:16px;height:2px;background:#ad814e;transform:rotate(-45deg)}.film-shield b{position:absolute;left:12px;top:6px;width:9px;height:9px;border-top:2px solid #ad814e;border-right:2px solid #ad814e;transform:rotate(-45deg)}
+.detective-film--lamp .film-fox{left:auto;right:12%;bottom:33px}
+.film-solved .film-fox{animation:film-arrive 1.2s ease forwards}
+.detective-film--bridge.film-solved .film-path{width:48%}
+.detective-film--bridge.film-solved .film-sign{background:#eff5cf}
+.detective-film--lamp.film-solved .film-shield{left:51%;transform:rotate(0)}
+.detective-film--lamp.film-solved .film-lamp{animation:film-glow .8s ease-in-out 2 alternate;box-shadow:0 0 22px 8px #ffd96988}
+.detective-film--lamp.film-solved .film-wind{opacity:.32}
+@keyframes film-walk{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+@keyframes film-arrive{to{transform:translateX(72px)}}
+@keyframes film-cloud-drift{to{transform:translateX(18px)}}
+@keyframes film-wind{0%{transform:translateX(-3px);opacity:.45}60%{transform:translateX(31px);opacity:1}100%{transform:translateX(43px);opacity:.38}}
+@keyframes film-flicker{0%,100%{filter:brightness(.84);transform:rotate(-2deg)}50%{filter:brightness(1.08);transform:rotate(2deg)}}
+@keyframes film-glow{to{filter:brightness(1.25);transform:scale(1.08)}}
+@media(max-width:480px){.detective-film{height:158px}.detective-film--bridge{height:auto}.film-lighthouse{right:9%;top:37px;transform:scale(.86)}.film-bridge{left:31%;width:56px}.film-sign{right:19%;transform:scale(.9) rotate(-6deg)}.film-fox{left:11%}.film-caption{display:none}.detective-film--lamp .film-lamp{left:56%}.detective-film--lamp .film-shield{left:41%;width:30px;height:46px}}
+@media(prefers-reduced-motion:reduce){.detective-film *{animation:none!important;transition:none!important}}
