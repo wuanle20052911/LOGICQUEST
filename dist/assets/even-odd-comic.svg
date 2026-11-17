@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title description">
+  <title id="title">Truyện tranh: Bí quyết số chẵn và số lẻ</title>
+  <desc id="description">Sáu khung truyện phiêu lưu của Mẫn và Mít: tìm thẻ số, ghép thành đôi, nhận ra số dư, học quy tắc chữ số cuối và phân loại số trên con đường rẽ nhánh.</desc>
+  <defs>
+    <linearGradient id="paper" x2="0" y2="1">
+      <stop stop-color="#fff9e9"/>
+      <stop offset="1" stop-color="#f0e2c6"/>
+    </linearGradient>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#d8eef0"/>
+      <stop offset="1" stop-color="#f5e9c9"/>
+    </linearGradient>
+    <g id="fox" stroke="#67442f" stroke-linejoin="round">
+      <path d="m22 103-8 22q-1 5 8 5h17l3-24m15-3 5 23q1 5 10 4l10-2q5-2 0-7l-17-23" fill="#f4a44f" stroke-width="4"/>
+      <path d="M28 67q-5 20-8 37 21 15 50 0L64 66" fill="#579079" stroke-width="4"/>
+      <path d="m25 78-14 17q-3 5 3 8t11-3l11-12m27-8 13 12q5 5 10 0t0-9L70 63" fill="#f4a44f" stroke-width="4"/>
+      <path d="M12 25 8 2q-1-5 5-2l20 14m22 0L75 1q6-3 5 3l-5 23" fill="#eb8f42" stroke-width="4"/>
+      <path d="m17 18-2-9 12 8m40 0 12-9-2 11" fill="#f6c3a0" stroke="none"/>
+      <path d="M9 34q0-30 30-30t31 30q0 34-31 38T9 34" fill="#f4a44f" stroke-width="4"/>
+      <path d="M17 43q3-18 22-18t22 18q-6 20-22 20T17 43" fill="#fff0d9" stroke="none"/>
+      <ellipse cx="27" cy="34" rx="3.5" ry="5" fill="#3c352e" stroke="none"/>
+      <ellipse cx="51" cy="34" rx="3.5" ry="5" fill="#3c352e" stroke="none"/>
+      <circle cx="20" cy="44" r="4" fill="#ed947c" opacity=".8" stroke="none"/>
+      <circle cx="58" cy="44" r="4" fill="#ed947c" opacity=".8" stroke="none"/>
+      <path d="M34 43q5-5 10 0-2 5-5 5t-5-5m5 5q-3 5-7 2m7-2q3 5 7 2" fill="#7d5140" stroke="none"/>
+      <path d="M25 67q14 10 29 0l-4 12H30z" fill="#f0cf69" stroke-width="3"/>
+      <path d="m51 73 11 8-13 3z" fill="#f0cf69" stroke-width="2"/>
+    </g>
+    <g id="rabbit" stroke="#766353" stroke-linejoin="round">
+      <path d="M22 103 16 124q-1 5 7 6h16l4-26m15-2 7 22q2 5 10 4l10-2q5-2 0-7l-19-20" fill="#f8ecdc" stroke-width="4"/>
+      <path d="M27 67q-5 20-8 36 20 15 49 1L63 66" fill="#8cae81" stroke-width="4"/>
+      <path d="m25 78-14 15q-4 5 2 9t11-2l13-14m26-8 13 13q5 5 10 0t0-9L70 63" fill="#f8ecdc" stroke-width="4"/>
+      <path d="M24 28Q10 1 19 0q11 0 18 27m12 0Q49 1 60 0q9 0 1 29" fill="#f8ecdc" stroke-width="4"/>
+      <path d="M27 24Q20 9 23 8q5 1 9 18m10 0q2-15 7-17 4 0 0 17" fill="#eea9a0" stroke="none"/>
+      <ellipse cx="42" cy="42" rx="32" ry="29" fill="#fff9ee" stroke-width="4"/>
+      <ellipse cx="31" cy="39" rx="3.5" ry="5" fill="#3c352e" stroke="none"/>
+      <ellipse cx="53" cy="39" rx="3.5" ry="5" fill="#3c352e" stroke="none"/>
+      <circle cx="23" cy="49" r="4" fill="#edaaa0" opacity=".75" stroke="none"/>
+      <circle cx="61" cy="49" r="4" fill="#edaaa0" opacity=".75" stroke="none"/>
+      <path d="M38 48q4-5 8 0-2 5-4 5t-4-5m4 5q-2 4-6 2m6-2q2 4 6 2" fill="#8b655d" stroke="none"/>
+      <path d="M26 69q15 9 30-1l-4 12H31z" fill="#e9b86a" stroke-width="3"/>
+      <path d="M55 71q15-8 18 2-1 11-13 8" fill="#fff9ee" stroke-width="3"/>
+    </g>
+    <g id="bubble">
+      <path d="M0 10Q0 0 12 0h150q12 0 12 10v35q0 10-12 10H40L20 68l5-13h-13Q0 55 0 45z" fill="#fffdf3" stroke="#394438" stroke-width="3"/>
+    </g>
+    <style>
+      .frame{fill:url(#paper);stroke:#343a31;stroke-width:6}
+      .headline{font:900 19px 'Trebuchet MS',sans-serif;fill:#283b31}
+      .bubbletext{font:700 15px 'Trebuchet MS',sans-serif;fill:#27382f}
+      .chalk{font:900 24px 'Trebuchet MS',sans-serif;fill:#fff6d8}
+      .smallchalk{font:700 17px 'Trebuchet MS',sans-serif;fill:#e9f1d5}
+    </style>
+  </defs>
+  <rect width="1200" height="700" fill="#f4ead5"/>
+
+  <g transform="translate(20 18)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <path d="M8 208q78-42 150 1t211-5v108H8z" fill="#b9cb91"/>
+    <path d="M14 157h94v70H14z" fill="#d99d68" stroke="#554b3b" stroke-width="4"/>
+    <path d="m6 160 55-46 57 46z" fill="#9a5945" stroke="#554b3b" stroke-width="4"/>
+    <path d="M139 190h72v48h-72z" fill="#f3d9a8" stroke="#554b3b" stroke-width="3"/>
+    <path d="m131 193 44-37 45 37z" fill="#6c8c70" stroke="#554b3b" stroke-width="3"/>
+    <use href="#fox" transform="translate(88 163) scale(.84)"/>
+    <use href="#rabbit" transform="translate(248 164) scale(.73)"/>
+    <rect x="227" y="231" width="38" height="28" rx="4" fill="#fff4d4" stroke="#42493d" stroke-width="3" transform="rotate(-12 227 231)"/>
+    <text x="237" y="251" font-size="17" font-weight="900" fill="#3c654b">12</text>
+    <use href="#bubble" x="174" y="12"/>
+    <text class="bubbletext" x="182" y="33">Thẻ số bay khắp phố!</text>
+    <text class="bubbletext" x="191" y="52">Cùng tìm cách xếp nhé.</text>
+    <text class="headline" x="18" y="293">HỘI LÀNG SẮP MỞ CỬA!</text>
+  </g>
+
+  <g transform="translate(412 18)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <rect x="30" y="82" width="210" height="148" rx="8" fill="#345447" stroke="#594d3b" stroke-width="5"/>
+    <text class="chalk" x="51" y="116">GHÉP THÀNH ĐÔI</text>
+    <g fill="#f1c966" stroke="#3b4436" stroke-width="2">
+      <circle cx="67" cy="157" r="12"/><circle cx="105" cy="157" r="12"/>
+      <circle cx="157" cy="157" r="12"/><circle cx="195" cy="157" r="12"/>
+      <circle cx="67" cy="197" r="12"/><circle cx="105" cy="197" r="12"/>
+      <circle cx="157" cy="197" r="12"/><circle cx="195" cy="197" r="12"/>
+    </g>
+    <path d="M124 144v65" stroke="#e8e4c9" stroke-dasharray="4 5" stroke-width="2"/>
+    <use href="#fox" transform="translate(270 150) scale(.78)"/>
+    <use href="#bubble" x="186" y="12"/>
+    <text class="bubbletext" x="195" y="33">Ghép đôi hết,</text>
+    <text class="bubbletext" x="195" y="52">không dư hạt nào!</text>
+    <text class="headline" x="20" y="293">12 HẠT GHÉP VỪA ĐỦ · SỐ CHẴN</text>
+  </g>
+
+  <g transform="translate(804 18)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <rect x="33" y="83" width="210" height="147" rx="8" fill="#345447" stroke="#594d3b" stroke-width="5"/>
+    <text class="chalk" x="72" y="118">THỬ VỚI 13</text>
+    <g fill="#f1c966" stroke="#3b4436" stroke-width="2">
+      <circle cx="67" cy="157" r="12"/><circle cx="105" cy="157" r="12"/>
+      <circle cx="157" cy="157" r="12"/><circle cx="195" cy="157" r="12"/>
+      <circle cx="67" cy="197" r="12"/><circle cx="105" cy="197" r="12"/>
+      <circle cx="157" cy="197" r="12"/>
+    </g>
+    <circle cx="220" cy="197" r="12" fill="#ef9b6b" stroke="#3b4436" stroke-width="2"/>
+    <path d="M214 216q14 15 28 0" fill="none" stroke="#fae6ac" stroke-width="3"/>
+    <use href="#rabbit" transform="translate(275 155) scale(.72)"/>
+    <use href="#bubble" x="186" y="12"/>
+    <text class="bubbletext" x="195" y="33">Còn dư một hạt</text>
+    <text class="bubbletext" x="203" y="52">là số lẻ đó!</text>
+    <text class="headline" x="20" y="293">13 CÒN DƯ 1 · SỐ LẺ</text>
+  </g>
+
+  <g transform="translate(20 358)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <rect x="28" y="78" width="236" height="155" rx="7" fill="#344e42" stroke="#594d3b" stroke-width="5"/>
+    <text class="chalk" x="54" y="117">NHÌN CHỮ SỐ CUỐI</text>
+    <text x="62" y="166" font-size="39" font-weight="900" fill="#fff6d8">42</text>
+    <text x="148" y="166" font-size="39" font-weight="900" fill="#f6c77e">37</text>
+    <text class="smallchalk" x="58" y="202">CHẴN</text>
+    <text class="smallchalk" x="153" y="202">LẺ</text>
+    <use href="#fox" transform="translate(276 151) scale(.76)"/>
+    <use href="#bubble" x="180" y="12"/>
+    <text class="bubbletext" x="189" y="33">Số to cũng không sao,</text>
+    <text class="bubbletext" x="198" y="52">chỉ nhìn số cuối!</text>
+    <text class="headline" x="20" y="293">42 CHẴN · 37 LẺ</text>
+  </g>
+
+  <g transform="translate(412 358)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <rect x="32" y="75" width="312" height="166" rx="9" fill="#345447" stroke="#594d3b" stroke-width="5"/>
+    <text class="chalk" x="74" y="112">BÍ QUYẾT NHỚ NHANH</text>
+    <text x="62" y="158" font-size="31" font-weight="900" fill="#f3d17f">0 · 2 · 4 · 6 · 8</text>
+    <text class="smallchalk" x="119" y="184">LÀ SỐ CHẴN</text>
+    <path d="M58 198h262" stroke="#e5dfc4" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="62" y="226" font-size="26" font-weight="900" fill="#f5b48a">1 · 3 · 5 · 7 · 9</text>
+    <text class="headline" x="43" y="278">LÀ SỐ LẺ</text>
+    <text class="headline" x="20" y="307">CHỈ CẦN NHỚ CHỮ SỐ TẬN CÙNG</text>
+  </g>
+
+  <g transform="translate(804 358)">
+    <rect class="frame" width="376" height="320" rx="8"/>
+    <rect x="7" y="7" width="362" height="306" rx="5" fill="url(#sky)"/>
+    <path d="M186 294V218L104 121M186 218l91-97" fill="none" stroke="#d3b27a" stroke-width="36" stroke-linecap="round"/>
+    <path d="M186 294V218L104 121M186 218l91-97" fill="none" stroke="#f8eccb" stroke-width="25" stroke-linecap="round"/>
+    <path d="M51 78h106v44H51z" fill="#e1ae62" stroke="#4a4937" stroke-width="4"/>
+    <text x="67" y="107" font-size="21" font-weight="900" fill="#394738">SỐ CHẴN</text>
+    <path d="M223 78h100v44H223z" fill="#e1ae62" stroke="#4a4937" stroke-width="4"/>
+    <text x="245" y="107" font-size="21" font-weight="900" fill="#394738">SỐ LẺ</text>
+    <g fill="#fff8e4" stroke="#514d3b" stroke-width="3">
+      <rect x="62" y="153" width="50" height="37" rx="5" transform="rotate(-8 62 153)"/>
+      <rect x="265" y="153" width="50" height="37" rx="5" transform="rotate(8 265 153)"/>
+    </g>
+    <text x="75" y="178" font-size="20" font-weight="900" fill="#34473a">24</text>
+    <text x="277" y="178" font-size="20" font-weight="900" fill="#34473a">31</text>
+    <use href="#fox" transform="translate(155 168) scale(.8)"/>
+    <text class="headline" x="20" y="299">MẪN VÀ MÍT NHỜ EM GIÚP SỨC!</text>
+  </g>
+</svg>

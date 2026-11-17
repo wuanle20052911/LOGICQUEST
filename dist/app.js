@@ -8,7 +8,8 @@ const userId = localStorage.getItem(userIdKey) || (() => {
 })();
 let state; try { state = JSON.parse(localStorage.getItem(storageKey)); } catch {}
 const hasLocalState = Boolean(state && Array.isArray(state.attempts) && Array.isArray(state.completed));
-if (!hasLocalState) state = {attempts:[],completed:[],age:'6'};
+if (!hasLocalState) state = {attempts:[],completed:[],age:'6',storyGames:[]};
+state.storyGames = Array.isArray(state.storyGames) ? [...new Set(state.storyGames.filter(id=>id==='even-odd'))] : [];
 let syncTimer;
 let syncing = false;
 let syncPending = false;
@@ -26,7 +27,7 @@ async function syncProgress(){
  syncing=true;
  setSyncStatus('Đang đồng bộ...');
  try{
-  const response=await fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,completed:state.completed,attempts:state.attempts,stars:stars(),age:Number(state.age)})});
+  const response=await fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,completed:state.completed,attempts:state.attempts,story_games:state.storyGames,stars:stars(),age:Number(state.age)})});
   const result=await response.json();
   if(!response.ok)throw new Error(result.error||`HTTP ${response.status}`);
   setSyncStatus('Đã đồng bộ');
@@ -59,6 +60,7 @@ async function loadCloudProgress(){
     attempts.set(key,{...attempt,attempt_id:attempt.attempt_id||`legacy-${index}-${key}`});
    });
    state.attempts=[...attempts.values()];
+   state.storyGames=[...new Set([...state.storyGames,...(Array.isArray(cloud.story_games)?cloud.story_games.filter(id=>id==='even-odd'):[])])];
    if(!hasLocalState&&Number.isInteger(cloud.age))state.age=String(cloud.age);
    $('#grade').value=state.age;
   }
@@ -85,6 +87,15 @@ const questions = [
 {id:8,w:3,s:4,story:'Cáo định qua cầu, nhưng cầu đang sửa. Gần đó có một đường vòng với biển chỉ tới hải đăng.',q:'Cáo nên làm gì để tiếp tục?',o:['Cứ bước lên cầu đang sửa','Xem biển và đi theo đường vòng','Đứng mãi trước cầu'],a:1,h:'Kế hoạch cũ không dùng được. Có con đường nào khác được chỉ dẫn không?',why:'Cáo đổi sang đường vòng theo biển chỉ dẫn. Khi điều kiện đổi, mình có thể đổi kế hoạch.'},
 {id:9,w:3,s:4,open:true,story:'Gió thổi tắt đèn giấy của Cáo. Bạn còn một chiếc hộp và vài tấm bìa để thử lại.',q:'Em sẽ đổi cách làm thế nào để che gió cho đèn? Vì sao?',h:'Nghĩ xem gió tới từ đâu, rồi tìm cách chắn gió mà vẫn nhìn thấy ánh đèn.',why:'Em đã đề xuất một cách làm mới. Cùng người lớn thử bằng đèn pin, xem kết quả rồi điều chỉnh nhé!'}
 ];
+const evenOddComicPanels = [
+ {scene:'🏮',beat:'Hội làng sắp mở!',dialogue:'Mẫn và Mít phát hiện các thẻ số chỉ đường bị gió thổi tung.'},
+ {scene:'🫘',beat:'Xếp thành từng đôi',dialogue:'Mẫn: “Ghép đôi hết, không dư hạt nào thì số đó là số chẵn!”'},
+ {scene:'🧮',beat:'Một hạt còn lại?',dialogue:'Mít: “Nếu dư một hạt sau khi ghép đôi thì đó là số lẻ!”'},
+ {scene:'🔎',beat:'Mẹo của Mẫn',dialogue:'“Số lớn cũng dễ xem: chỉ cần nhìn chữ số cuối cùng.”'},
+ {scene:'📚',beat:'Ghi nhớ quy tắc',dialogue:'Cuối là 0, 2, 4, 6, 8: số chẵn. Cuối là 1, 3, 5, 7, 9: số lẻ.'},
+ {scene:'🛤️',beat:'Đến lượt em!',dialogue:'Con đường tách làm hai nhánh. Hãy giúp dân làng đưa mỗi thẻ số về đúng phía.'}
+];
+let evenOddTiles=[],selectedEvenOddTile=null,evenOddMistakes=0;
 let view='map',current=null,choice=null,hints=0,tries=0,done=false;
 const count = w => questions.filter(q=>q.w===w&&state.completed.includes(q.id)).length;
 const stars = () => state.completed.length;
@@ -95,9 +106,45 @@ function render(){
  if(view==='map'){ $('#content').innerHTML='<h1>Quần đảo tư duy</h1>';return; }
  if(view==='badges'){ $('#content').innerHTML=`<div class="eyebrow">GHI NHẬN SỰ KHÁM PHÁ</div><h1>Bộ sưu tập của em</h1><p>Mỗi nhiệm vụ hoàn thành được một ngôi sao, kể cả khi em cần gợi ý.</p><div class="badges">${worlds.map((w,i)=>`<div class="badge"><span>${count(i)===questions.filter(q=>q.w===i).length?w[2]:'🌱'}</span><b>${w[0]}</b><p>${count(i)}/${questions.filter(q=>q.w===i).length} nhiệm vụ đã khám phá</p></div>`).join('')}</div>`;return; }
  const closed=state.attempts.filter(a=>a.kind==='closed'), independent=questions.filter(q=>!q.open&&state.attempts.some(a=>a.q===q.id&&a.correct&&a.tries===1&&a.hints===0)).length;
- $('#content').innerHTML=`<div class="eyebrow">${view==='parent'?'CÙNG CON KHÁM PHÁ':'MỖI LẦN THỬ, MỘT ĐIỀU MỚI'}</div><h1>${view==='parent'?'Góc phụ huynh':'Hành trình tiến bộ'}</h1><p>Giải cứu Đảo Ánh Sáng · Dành cho trẻ 6–8 tuổi</p><div class="stats"><div class="stat"><strong>${state.completed.length}/10</strong>Nhiệm vụ đã khám phá</div><div class="stat"><strong>${independent}/7</strong>Bài có đáp án được giải ngay, chưa cần gợi ý</div><div class="stat"><strong>${state.attempts.filter(a=>a.kind==='open').length}</strong>Ý tưởng đã ghi lại</div></div><section class="panel"><h2>Năm cách nghĩ đang luyện</h2>${skills.map((s,i)=>`<div class="skill"><b>${s}</b> <span style="float:right">${skillProgress(i)}</span><p>${skillNotes[i]}</p><div class="track"><i style="width:${Number(skillProgress(i).split('/')[0])/2*100}%"></i></div></div>`).join('')}<p>Thanh tiến độ thể hiện nhiệm vụ đã hoàn thành, không phải điểm năng lực, IQ hay kết luận chẩn đoán. Bản mẫu chưa được chuẩn hóa để đánh giá trẻ.</p></section><div class="note warm" style="margin:20px 0"><span class="icon">🌻</span><div><h3>Cùng con nghĩ thêm</h3><p>Chọn ba đồ vật trong nhà và hỏi: “Con có thể dùng chúng để làm gì? Nếu thiếu một món thì con đổi cách nào?”</p></div></div><section class="panel"><h2>Quan sát từ lượt chơi</h2>${state.attempts.slice(-10).reverse().map(a=>{const q=questions.find(q=>q.id===a.q);return `<article class="observation"><b>${skills[q.s]} · ${a.kind==='open'?'Đã ghi ý tưởng':a.correct?'Đã tìm được lời giải':'Đang thử cách giải'}</b><p>${a.kind==='closed'?`${a.tries} lần thử · ${a.hints} gợi ý. `:''}${a.reason?`Lời của trẻ: “${escapeHTML(a.reason)}”`:'Trẻ chưa ghi lời giải thích.'}</p>${a.kind==='open'?'<small>Ý tưởng được lưu để cùng trao đổi; chưa chấm tính phù hợp hay mức sáng tạo.</small>':''}</article>`}).join('')||'<p>Chưa có lượt chơi. Bắt đầu từ bất kỳ hòn đảo nào nhé!</p>'}<p><small>Dữ liệu chỉ lưu trên trình duyệt này, chưa có tài khoản hay đồng bộ. Lời kể không được AI phân tích. ${closed.length?'Các lần thử sai được giữ để nhìn lại quá trình.':''}</small></p><button class="text-button" onclick="resetProgress()">Xóa tiến độ trên thiết bị này</button></section>`;
+ $('#content').innerHTML=`<div class="eyebrow">${view==='parent'?'CÙNG CON KHÁM PHÁ':'MỖI LẦN THỬ, MỘT ĐIỀU MỚI'}</div><h1>${view==='parent'?'Góc phụ huynh':'Hành trình tiến bộ'}</h1><p>Giải cứu Đảo Ánh Sáng · Dành cho trẻ 6–8 tuổi</p><div class="stats"><div class="stat"><strong>${state.completed.length}/10</strong>Nhiệm vụ đã khám phá</div><div class="stat"><strong>${independent}/7</strong>Bài có đáp án được giải ngay, chưa cần gợi ý</div><div class="stat"><strong>${state.attempts.filter(a=>a.kind==='open').length}</strong>Ý tưởng đã ghi lại</div><div class="stat"><strong>${state.storyGames.includes('even-odd')?'1':'0'}/1</strong>Bài truyện và minigame đã hoàn thành</div></div><section class="panel"><h2>Năm cách nghĩ đang luyện</h2>${skills.map((s,i)=>`<div class="skill"><b>${s}</b> <span style="float:right">${skillProgress(i)}</span><p>${skillNotes[i]}</p><div class="track"><i style="width:${Number(skillProgress(i).split('/')[0])/2*100}%"></i></div></div>`).join('')}<p>Thanh tiến độ thể hiện nhiệm vụ đã hoàn thành, không phải điểm năng lực, IQ hay kết luận chẩn đoán. Bản mẫu chưa được chuẩn hóa để đánh giá trẻ.</p></section><div class="note warm" style="margin:20px 0"><span class="icon">🌻</span><div><h3>Cùng con nghĩ thêm</h3><p>Chọn ba đồ vật trong nhà và hỏi: “Con có thể dùng chúng để làm gì? Nếu thiếu một món thì con đổi cách nào?”</p></div></div><section class="panel"><h2>Quan sát từ lượt chơi</h2>${state.attempts.slice(-10).reverse().map(a=>{const q=questions.find(q=>q.id===a.q);return `<article class="observation"><b>${skills[q.s]} · ${a.kind==='open'?'Đã ghi ý tưởng':a.correct?'Đã tìm được lời giải':'Đang thử cách giải'}</b><p>${a.kind==='closed'?`${a.tries} lần thử · ${a.hints} gợi ý. `:''}${a.reason?`Lời của trẻ: “${escapeHTML(a.reason)}”`:'Trẻ chưa ghi lời giải thích.'}</p>${a.kind==='open'?'<small>Ý tưởng được lưu để cùng trao đổi; chưa chấm tính phù hợp hay mức sáng tạo.</small>':''}</article>`}).join('')||'<p>Chưa có lượt chơi. Bắt đầu từ bất kỳ hòn đảo nào nhé!</p>'}<p><small>Dữ liệu được lưu trên trình duyệt và đồng bộ nếu đã cấu hình máy chủ. Lời kể không được AI phân tích. ${closed.length?'Các lần thử sai được giữ để nhìn lại quá trình.':''}</small></p><button class="text-button" onclick="resetProgress()">Xóa tiến độ trên thiết bị này</button></section>`;
 }
-function play(w){const list=questions.filter(q=>q.w===w);current=list.find(q=>!state.completed.includes(q.id))||list[0];openQuestion();}
+function play(w){if(w===0){openEvenOddStory();return;}playQuestions(w);}
+function playQuestions(w){const list=questions.filter(q=>q.w===w);current=list.find(q=>!state.completed.includes(q.id))||list[0];openQuestion();}
+function openEvenOddStory(){renderEvenOddStory();if(!$('#game').open)$('#game').showModal();}
+function renderEvenOddStory(){
+ const transcript=evenOddComicPanels.map(panel=>`<li><b>${escapeHTML(panel.beat)}</b> ${escapeHTML(panel.dialogue)}</li>`).join('');
+ $('#gamebody').innerHTML=`<div class="eyebrow">TRUYỆN TOÁN · SỐ CHẴN & SỐ LẺ</div><h2>Những tấm thẻ lạc đường</h2><p>Mẫn và Mít cần phân loại các thẻ số để mở lối vào hội làng.</p><figure class="comic-page"><img src="assets/even-odd-comic.svg" alt="Truyện tranh sáu khung: Mẫn và Mít tìm các thẻ số, ghép hạt thành đôi để nhận biết số chẵn, tìm hạt dư để nhận biết số lẻ, học mẹo nhìn chữ số cuối và phân loại số trên con đường rẽ nhánh."><figcaption>Một chuyến phiêu lưu toán học của Mẫn và Mít</figcaption></figure><details class="comic-transcript"><summary>Đọc lời thoại trong truyện</summary><ol>${transcript}</ol></details><div class="comic-actions"><span>${state.storyGames.includes('even-odd')?'Em đã hoàn thành thử thách này rồi!':'Đọc truyện xong, mình cùng thử nhé.'}</span><button class="btn" onclick="startEvenOddGame()">Bắt đầu minigame →</button></div>`;
+}
+function shuffle(values){for(let i=values.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[values[i],values[j]]=[values[j],values[i]];}return values;}
+function startEvenOddGame(){
+ const evens=shuffle(Array.from({length:50},(_,i)=>i*2)).slice(0,4);
+ const odds=shuffle(Array.from({length:50},(_,i)=>i*2+1)).slice(0,4);
+ evenOddTiles=shuffle([...evens,...odds]).map((number,id)=>({id,number,sortedAs:null}));
+ selectedEvenOddTile=null;evenOddMistakes=0;renderEvenOddGame('Chọn một thẻ số, rồi đưa thẻ vào đúng con đường.');
+}
+function renderEvenOddGame(message){
+ const sorted=evenOddTiles.filter(tile=>tile.sortedAs!==null).length;
+ const cards=evenOddTiles.map(tile=>`<button class="number-card${tile.id===selectedEvenOddTile?' selected':''}${tile.sortedAs!==null?' sorted':''}" ${tile.sortedAs!==null?'disabled':''} aria-label="Số ${tile.number}${tile.sortedAs!==null?`, đã xếp vào nhóm số ${tile.sortedAs==='even'?'chẵn':'lẻ'}`:''}" onclick="selectEvenOddTile(${tile.id})">${tile.sortedAs!==null?'✓ ':''}${tile.number}</button>`).join('');
+ $('#gamebody').innerHTML=`<div class="eyebrow">TRẠM THỬ THÁCH · ${sorted}/${evenOddTiles.length} THẺ</div><h2>Phố số chẵn & số lẻ</h2><p>Chọn một thẻ, rồi chọn con đường phù hợp. Nhìn chữ số cuối để tìm manh mối!</p><div class="number-road" aria-label="Các thẻ số cần phân loại">${cards}</div><div class="sorting-bins"><button class="sorting-bin even-bin" onclick="classifyEvenOdd('even')"><span>🟦</span><b>Số chẵn</b><small>0 · 2 · 4 · 6 · 8</small></button><button class="sorting-bin odd-bin" onclick="classifyEvenOdd('odd')"><span>🟧</span><b>Số lẻ</b><small>1 · 3 · 5 · 7 · 9</small></button></div><p class="game-feedback" aria-live="polite">${escapeHTML(message)}</p>`;
+}
+function selectEvenOddTile(id){selectedEvenOddTile=id;renderEvenOddGame('Giờ chọn con đường cho thẻ số này.');}
+function classifyEvenOdd(category){
+ if(selectedEvenOddTile===null){renderEvenOddGame('Chọn một thẻ số trước nhé.');return;}
+ const tile=evenOddTiles.find(item=>item.id===selectedEvenOddTile);
+ const correct=(tile.number%2===0)===(category==='even');
+ if(!correct){evenOddMistakes++;renderEvenOddGame(`Chưa đúng rồi. Thử nhìn chữ số cuối của ${tile.number} và chọn lại nhé!`);return;}
+ tile.sortedAs=category;selectedEvenOddTile=null;
+ const sorted=evenOddTiles.filter(item=>item.sortedAs!==null).length;
+ if(sorted===evenOddTiles.length){finishEvenOddGame();return;}
+ renderEvenOddGame(`Chính xác! ${tile.number} là số ${category==='even'?'chẵn':'lẻ'}. Còn ${evenOddTiles.length-sorted} thẻ nữa.`);
+}
+function finishEvenOddGame(){
+ if(!state.storyGames.includes('even-odd'))state.storyGames.push('even-odd');
+ persist();render();
+ $('#gamebody').innerHTML=`<div class="eyebrow">THỬ THÁCH HOÀN THÀNH</div><h2>🎉 Cả phố đã sáng đèn!</h2><p>Em đã phân loại đủ ${evenOddTiles.length} thẻ số. ${evenOddMistakes===0?'Thật tuyệt, em tìm ra ngay!':'Mỗi lần thử đều giúp mình nhớ quy tắc lâu hơn.'}</p><div class="tutor"><b>Mẹo nhớ nhanh</b><p>Nhìn chữ số tận cùng: 0, 2, 4, 6, 8 là số chẵn; 1, 3, 5, 7, 9 là số lẻ.</p></div><div class="comic-actions"><button class="text-button" onclick="openEvenOddStory()">Đọc lại câu chuyện</button><button class="text-button" onclick="continueForestQuestions()">Làm tiếp câu đố logic →</button><button class="btn" onclick="closeEvenOddLesson()">Về bản đồ</button></div>`;
+}
+function continueForestQuestions(){closeEvenOddLesson();playQuestions(0);}
+function closeEvenOddLesson(){stopReading();$('#game').close();render();}
 function openQuestion(){choice=null;hints=0;tries=0;done=false;const list=questions.filter(q=>q.w===current.w);$('#gamebody').innerHTML=`<div class="eyebrow">${worlds[current.w][0]} · ${list.indexOf(current)+1}/${list.length}</div><h2>${skills[current.s]} ✦</h2><div class="story"><span>🦊</span><p>${current.story}</p></div><button class="text-button" onclick="readStory()">🔊 Nghe câu chuyện và câu hỏi</button><div class="question">${current.q.replace(/\n/g,'<br>')}</div>${current.open?'<p>Có nhiều cách nghĩ. Em có thể nhờ người lớn ghi lại lời kể của mình.</p>':`<div class="options">${current.o.map((o,i)=>`<button onclick="choose(${i})">${o}</button>`).join('')}</div>`}<label for="reason">${current.open?'Ý tưởng của em':'Em nghĩ như thế nào? (không bắt buộc)'}</label><textarea id="reason" maxlength="500" rows="3" placeholder="Ghi lại cách nghĩ của em ở đây..."></textarea><div class="tutor">🦉 <b>Cú Mèo đồng hành</b><p id="hinttext">Không cần vội. Em có thể thử lại hoặc nhờ mình gợi ý.</p><button id="hintbtn" onclick="hint()">Cho em một gợi ý</button></div><div class="feedback" id="feedback" aria-live="polite"></div><button class="btn" id="check" onclick="check()">${current.open?'Lưu ý tưởng của em':'Thử lời giải này'}</button>`;if(!$('#game').open)$('#game').showModal();}
 function choose(i){if(done)return;choice=i;document.querySelectorAll('.options button').forEach((b,n)=>b.classList.toggle('selected',n===i));}
 function hint(){if(hints||done)return;hints=1;$('#hinttext').textContent=current.h;$('#hintbtn').disabled=true;}
@@ -113,5 +160,5 @@ function check(){
 }
 function stopReading(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
 function readStory(){if(!('speechSynthesis' in window)){$('#feedback').textContent='Thiết bị chưa hỗ trợ đọc tự động. Em nhờ người lớn đọc cùng nhé.';return;}stopReading();const utterance=new SpeechSynthesisUtterance(`${current.story} ${current.q} ${current.o?.join('. ')||''}`);utterance.lang='vi-VN';utterance.rate=.85;utterance.onerror=()=>{if($('#feedback'))$('#feedback').textContent='Chưa đọc được trên thiết bị này. Em nhờ người lớn đọc cùng nhé.';};window.speechSynthesis.speak(utterance);}
-function resetProgress(){if(!confirm('Xóa toàn bộ lượt chơi và ý tưởng trên trình duyệt này?'))return;state={attempts:[],completed:[],age:state.age};persist();render();}
+function resetProgress(){if(!confirm('Xóa toàn bộ lượt chơi và ý tưởng trên trình duyệt này?'))return;state={attempts:[],completed:[],age:state.age,storyGames:[]};persist();render();}
 document.querySelectorAll('aside nav button').forEach(b=>b.onclick=()=>navigateTo(b.dataset.view));$('.close').onclick=()=>{stopReading();$('#game').close();};$('#game').addEventListener('close',stopReading);$('#grade').value=state.age;$('#grade').onchange=e=>{state.age=e.target.value;persist();};render();loadCloudProgress();

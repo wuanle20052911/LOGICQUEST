@@ -10,6 +10,9 @@ create table if not exists public.user_progress (
 alter table public.user_progress
 add column if not exists attempts jsonb not null default '[]'::jsonb;
 
+alter table public.user_progress
+add column if not exists story_games jsonb not null default '[]'::jsonb;
+
 alter table public.user_progress enable row level security;
 
 create policy "Users can read own progress"

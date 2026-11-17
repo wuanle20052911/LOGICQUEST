@@ -55,7 +55,7 @@ app.get('/api/progress/:userId', async (req, res) => {
 });
 
 app.post('/api/progress', async (req, res) => {
-  const { user_id, completed, attempts, age } = req.body || {};
+  const { user_id, completed, attempts, story_games = [], age } = req.body || {};
 
   if (typeof user_id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(user_id)) {
     return res.status(400).json({ error: 'user_id không hợp lệ' });
@@ -66,6 +66,9 @@ app.post('/api/progress', async (req, res) => {
   if (!Array.isArray(attempts) || attempts.length > 500) {
     return res.status(400).json({ error: 'attempts phải là danh sách hợp lệ (tối đa 500 lượt)' });
   }
+  if (!Array.isArray(story_games) || story_games.length > 100 || story_games.some(id => typeof id !== 'string' || !/^[a-z0-9-]{1,64}$/.test(id))) {
+    return res.status(400).json({ error: 'story_games phải là danh sách mã bài truyện hợp lệ (tối đa 100 bài)' });
+  }
   if (!Number.isInteger(age) || age < 6 || age > 8) {
     return res.status(400).json({ error: 'age phải từ 6 đến 8' });
   }
@@ -74,6 +77,7 @@ app.post('/api/progress', async (req, res) => {
     user_id,
     completed: [...new Set(completed)],
     attempts: attempts.slice(-500),
+    story_games: [...new Set(story_games)],
     stars: new Set(completed).size,
     age,
     updated_at: new Date().toISOString()

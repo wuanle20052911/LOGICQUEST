@@ -14,6 +14,7 @@ The Express server serves the frontend from `dist/` and syncs progress through S
 3. Run `supabase.sql` in the Supabase SQL Editor.
 4. Start the app from the repository root with `npm start`, then open `http://localhost:4000`.
 
-The app keeps a local copy in browser storage and syncs completed tasks, attempts, and age to Supabase. If Supabase is unavailable or not configured, play continues locally and the sync status indicates that the cloud copy is not current.
+For an existing project, run `supabase.sql` again to add the `story_games` progress column.
+The app keeps a local copy in browser storage and syncs completed tasks, attempts, story-game completions, and age to Supabase. If Supabase is unavailable or not configured, play continues locally and the sync status indicates that the cloud copy is not current.
 
 **Security note:** The current prototype uses a random browser ID, not a signed-in account. The server-side service-role key must stay in `.env` and must never be placed in frontend code or committed. Because the API does not yet authenticate users, do not use this setup for sensitive data or a public production release. Add Supabase Auth and verify the user's access token before exposing personal progress.
